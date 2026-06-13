@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluid CSS Generator — Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── SETTINGS OVERLAY ──────────────────────────────────── -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ── SETTINGS PANEL ───────────────────────────────────── -->
+  <aside class="settings-panel" id="settings-panel" role="dialog" aria-label="Settings">
+    <div class="settings-header">
+      <span class="settings-title">Settings</span>
+      <button class="settings-close" id="settings-close-btn" aria-label="Close settings">✕</button>
+    </div>
+
+    <div class="settings-body">
+
+      <!-- Appearance -->
+      <div class="settings-section">
+        <div class="settings-section-title">Appearance</div>
+
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Theme</div>
+            <div class="settings-row-sub">Light, dark, or follow system</div>
+          </div>
+          <div class="seg" id="theme-seg">
+            <button class="seg-btn" data-setting="theme" data-value="light">Light</button>
+            <button class="seg-btn active" data-setting="theme" data-value="system">Auto</button>
+            <button class="seg-btn" data-setting="theme" data-value="dark">Dark</button>
+          </div>
+        </div>
+
+        <div class="settings-row settings-row--top">
+          <div>
+            <div class="settings-row-label">Accent colour</div>
+            <div class="settings-row-sub">Affects buttons &amp; highlights</div>
+          </div>
+          <div class="swatches" id="accent-swatches">
+            <span class="swatch active" data-color="#1D9E75" style="background:#1D9E75" title="Teal"></span>
+            <span class="swatch" data-color="#2563EB" style="background:#2563EB" title="Blue"></span>
+            <span class="swatch" data-color="#7C3AED" style="background:#7C3AED" title="Purple"></span>
+            <span class="swatch" data-color="#EA580C" style="background:#EA580C" title="Orange"></span>
+            <span class="swatch" data-color="#DB2777" style="background:#DB2777" title="Pink"></span>
+            <span class="swatch" data-color="#CA8A04" style="background:#CA8A04" title="Gold"></span>
+            <input type="color" id="accent-custom" value="#1D9E75" class="color-picker" title="Custom colour" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Default Values -->
+      <div class="settings-section">
+        <div class="settings-section-title">Default Values</div>
+
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Base font size</div>
+            <div class="settings-row-sub">Used for rem conversion</div>
+          </div>
+          <input type="number" class="settings-input" id="s-base" data-key="baseFontSize" data-update="true" value="16" min="1" max="32" />
+        </div>
+
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Min viewport</div>
+            <div class="settings-row-sub">Default: 375px</div>
+          </div>
+          <input type="number" class="settings-input" id="s-minvp" data-key="defaultMinVp" value="375" min="100" max="800" />
+        </div>
+
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Max viewport</div>
+            <div class="settings-row-sub">Default: 1440px</div>
+          </div>
+          <input type="number" class="settings-input" id="s-maxvp" data-key="defaultMaxVp" value="1440" min="800" max="3840" />
+        </div>
+      </div>
+
+      <!-- Output Format -->
+      <div class="settings-section">
+        <div class="settings-section-title">Output Format</div>
+
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Primary unit</div>
+            <div class="settings-row-sub">Shown in clamp output</div>
+          </div>
+          <div class="seg" id="unit-seg">
+            <button class="seg-btn active" data-setting="outputUnit" data-value="rem" data-update="true">rem</button>
+            <button class="seg-btn" data-setting="outputUnit" data-value="px" data-update="true">px</button>
+            <button class="seg-btn" data-setting="outputUnit" data-value="em" data-update="true">em</button>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Decimal precision</div>
+            <div class="settings-row-sub">Significant decimal places</div>
+          </div>
+          <div class="range-wrap range-wrap--sm">
+            <input type="range" id="s-prec" data-key="precision" data-update="true" min="2" max="6" value="4" />
+            <span class="range-val" id="prec-val">4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sections -->
+      <div class="settings-section">
+        <div class="settings-section-title">Sections</div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">Scaling curve chart</div>
+          <label class="toggle">
+            <input type="checkbox" id="tog-chart" data-section="section-chart" data-key="showChart" checked />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">Viewport simulator</div>
+          <label class="toggle">
+            <input type="checkbox" id="tog-sim" data-section="section-sim" data-key="showSim" checked />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">Breakpoint table</div>
+          <label class="toggle">
+            <input type="checkbox" id="tog-table" data-section="section-table" data-key="showTable" checked />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">Export panel</div>
+          <label class="toggle">
+            <input type="checkbox" id="tog-export" data-section="section-export" data-key="showExport" checked />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="reset-btn" id="reset-settings-btn">Reset to defaults</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN PAGE ─────────────────────────────────────────── -->
+  <main class="page">
+
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <p class="eyebrow">CSS Tooling · Pro</p>
+        <h1 class="h1">Fluid CSS Generator</h1>
+        <p class="subtitle">
+          Enter two values — get a <code class="inline-code">clamp()</code> formula
+          that scales fluidly across every device, from 320px to 4K.
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="history-toggle-btn" title="Saved history (H)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="settings-toggle-btn" title="Settings (S)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Presets -->
+    <div class="card">
+      <p class="section-label">Quick presets</p>
+      <div class="presets-wrap" id="presets-wrap">
+        <button class="pill-btn preset-btn" data-prop="font-size" data-token="body-text"        data-min="14"  data-max="18">Body text</button>
+        <button class="pill-btn preset-btn" data-prop="font-size" data-token="subheading"       data-min="18"  data-max="28">Subheading</button>
+        <button class="pill-btn preset-btn" data-prop="font-size" data-token="heading"          data-min="24"  data-max="48">Heading</button>
+        <button class="pill-btn preset-btn" data-prop="font-size" data-token="display"          data-min="36"  data-max="80">Display</button>
+        <button class="pill-btn preset-btn" data-prop="padding"   data-token="section-padding"  data-min="16"  data-max="56">Section padding</button>
+        <button class="pill-btn preset-btn" data-prop="gap"       data-token="grid-gap"         data-min="10"  data-max="28">Grid gap</button>
+        <button class="pill-btn preset-btn" data-prop="margin-bottom" data-token="vert-rhythm"  data-min="24"  data-max="72">Vertical rhythm</button>
+        <button class="pill-btn preset-btn" data-prop="border-radius" data-token="card-radius"  data-min="10"  data-max="20">Border radius</button>
+        <button class="pill-btn preset-btn" data-prop="width"    data-token="container"         data-min="320" data-max="1200">Container width</button>
+      </div>
+    </div>
+
+    <!-- Inputs -->
+    <div class="card">
+      <p class="section-label">Your values</p>
+      <div class="grid2 grid2--mb">
+        <div class="field">
+          <label for="prop">CSS property</label>
+          <input type="text" id="prop" value="font-size" placeholder="font-size" />
+        </div>
+        <div class="field">
+          <label for="token-name">Token / variable name</label>
+          <input type="text" id="token-name" value="body-text" placeholder="e.g. heading-lg" />
+        </div>
+        <div class="field">
+          <label for="minV">Mobile value (px) — at min viewport</label>
+          <input type="number" id="minV" value="16" min="0" step="0.5" />
+        </div>
+        <div class="field">
+          <label for="maxV">Desktop value (px) — at max viewport</label>
+          <input type="number" id="maxV" value="24" min="0" step="0.5" />
+        </div>
+      </div>
+
+      <details>
+        <summary>Advanced: custom viewport range</summary>
+        <div class="detail-body">
+          <div class="grid2">
+            <div class="field">
+              <label for="minVp">Min viewport (px)</label>
+              <input type="number" id="minVp" value="375" min="100" />
+            </div>
+            <div class="field">
+              <label for="maxVp">Max viewport (px)</label>
+              <input type="number" id="maxVp" value="1440" min="100" />
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- WCAG warning -->
+    <div class="alert alert-warn" id="wcag-alert">
+      <span class="alert-icon">♿</span>
+      <span id="wcag-msg">WCAG 1.4.4 recommends a minimum body text size of 16px. Your mobile value is below this threshold.</span>
+    </div>
+
+    <!-- Validation error -->
+    <div class="alert alert-error" id="error-alert">
+      <span class="alert-icon">⚠</span>
+      <span id="error-msg">Min value should be less than max value, and min viewport should be less than max viewport.</span>
+    </div>
+
+    <!-- Output formulas -->
+    <div class="card">
+      <p class="section-label">Generated formulas</p>
+
+      <div class="output-label">
+        clamp() <span class="badge badge-rec">Recommended</span>
+      </div>
+      <div class="code-row">
+        <span class="code-val code-val--green" id="o-clamp">—</span>
+        <div class="unit-pills">
+          <button class="unit-pill active" data-unit="rem">rem</button>
+          <button class="unit-pill" data-unit="px">px</button>
+          <button class="unit-pill" data-unit="em">em</button>
+        </div>
+        <button class="copy-btn" data-target="o-clamp">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+      </div>
+
+      <div class="output-label">calc() — extrapolates beyond max viewport</div>
+      <div class="code-row">
+        <span class="code-val code-val--white" id="o-calc">—</span>
+        <button class="copy-btn" data-target="o-calc">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+      </div>
+
+      <div class="output-label">Full CSS declaration</div>
+      <div class="code-row">
+        <span class="code-val code-val--muted" id="o-prop">—</span>
+        <button class="copy-btn" data-target="o-prop">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+      </div>
+
+      <div class="output-label">CSS custom property (variable)</div>
+      <div class="code-row">
+        <span class="code-val code-val--purple" id="o-var">—</span>
+        <button class="copy-btn" data-target="o-var">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+      </div>
+    </div>
+
+    <!-- Viewport Simulator -->
+    <div class="card" id="section-sim">
+      <p class="section-label">Live viewport simulator</p>
+      <div class="sim-slider-wrap">
+        <input type="range" class="sim-slider" id="sim-slider" min="320" max="2560" value="768" />
+      </div>
+      <div class="sim-stats">
+        <div class="sim-stat">
+          <span class="sim-stat-label">Viewport</span>
+          <span class="sim-stat-val" id="sim-vp">768px</span>
+        </div>
+        <div class="sim-stat">
+          <span class="sim-stat-label">Computed value</span>
+          <span class="sim-stat-val" id="sim-val">—</span>
+        </div>
+        <div class="sim-stat">
+          <span class="sim-stat-label">In rem</span>
+          <span class="sim-stat-val" id="sim-rem">—</span>
+        </div>
+        <div class="sim-stat">
+          <span class="sim-stat-label">Scale</span>
+          <span class="sim-stat-val" id="sim-pct">—</span>
+        </div>
+      </div>
+      <div class="preview-frame">
+        <textarea id="preview-text" rows="1" placeholder="Type preview text here…">The quick brown fox</textarea>
+      </div>
+      <p class="preview-hint">← Edit the text above — drag the slider to simulate any viewport width</p>
+    </div>
+
+    <!-- Scaling Curve Chart -->
+    <div class="card" id="section-chart">
+      <div class="chart-header">
+        <p class="section-label">Scaling curve</p>
+        <div class="chart-legend">
+          <span class="chart-legend-item">
+            <span class="chart-legend-line chart-legend-line--solid"></span>Fluid zone
+          </span>
+          <span class="chart-legend-item">
+            <span class="chart-legend-line chart-legend-line--dashed"></span>Clamped
+          </span>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <svg id="curve-svg" viewBox="0 0 820 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fluid scaling curve chart"></svg>
+      </div>
+    </div>
+
+    <!-- Breakpoint Table -->
+    <div class="card" id="section-table">
+      <p class="section-label">Computed values across all devices</p>
+      <div class="bp-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Device</th>
+              <th>Viewport</th>
+              <th>px value</th>
+              <th>rem value</th>
+              <th>Scale</th>
+            </tr>
+          </thead>
+          <tbody id="bp-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Export Panel -->
+    <div class="card" id="section-export">
+      <p class="section-label export-label">Export formats</p>
+      <div class="tabs-header" id="export-tabs-header">
+        <button class="tab-btn active" data-tab="export-css">CSS Vars</button>
+        <button class="tab-btn" data-tab="export-scss">SCSS</button>
+        <button class="tab-btn" data-tab="export-tailwind">Tailwind</button>
+        <button class="tab-btn" data-tab="export-tokens">Tokens JSON</button>
+      </div>
+
+      <div id="export-css" class="tab-pane active">
+        <div class="export-row">
+          <div></div>
+          <button class="copy-btn" data-target="exp-css-code">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre class="export-code" id="exp-css-code"></pre>
+      </div>
+
+      <div id="export-scss" class="tab-pane">
+        <div class="export-row">
+          <div></div>
+          <button class="copy-btn" data-target="exp-scss-code">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre class="export-code" id="exp-scss-code"></pre>
+      </div>
+
+      <div id="export-tailwind" class="tab-pane">
+        <div class="export-row">
+          <div></div>
+          <button class="copy-btn" data-target="exp-tw-code">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre class="export-code" id="exp-tw-code"></pre>
+      </div>
+
+      <div id="export-tokens" class="tab-pane">
+        <div class="export-row">
+          <div></div>
+          <button class="copy-btn" data-target="exp-json-code">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <pre class="export-code" id="exp-json-code"></pre>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card" id="section-history">
+      <div class="history-header">
+        <p class="section-label">Saved history</p>
+        <button class="pill-btn pill-btn--danger" id="clear-history-btn">Clear all</button>
+      </div>
+      <button class="save-btn" id="save-history-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Save current formula to history
+      </button>
+      <div id="history-list">
+        <p class="history-empty">No saved formulas yet. Generate a formula and click Save above.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
